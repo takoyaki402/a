@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" charset="utf-8">
+		<link rel="stylesheet" href="./data/style.css" type="text/css">
+		<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+		<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+		<script>
+
+			//コンポーネントの追加
+			AFRAME.registerComponent('cursor-listener', {
+	    		init: function () {
+					this.el.addEventListener('raycaster-intersected', evt => {
+	   		     		this.raycaster = evt.detail.el;
+	   		   		});
+	   		   		this.el.addEventListener('raycaster-intersected-cleared', evt => {
+	   		    		this.raycaster = null;
+	   		   		});
+	  		  	},
+
+	  		  // 毎フレームの処理
+	  		  	tick: function () {
+		      		if (!this.raycaster) { return; }  // Not intersecting.
+			      	let intersection = this.raycaster.components.raycaster.getIntersection(this.el).point;
+			      	if (!intersection) { return; } // Not intersecting
+	  		      // 箱の座標を衝突点にセット
+			      	new_box.setAttribute('position', intersection);
+			      	new_box.setAttribute('rotation', cam.getAttribute('rotation'));
+	  		  	}
+ 		 	});
+		
+		</script>
+	</head>
+
+	<!--ズームなどの一部動作の制限-->
+	<body style="touch-action:none">
+
+		<!--iOSにおいてDeviceMotion取得するために、ユーザーに画面タッチを強制-->
+		<div class="permission_ui">
+			<p class="permission_ui center_ui">画面をタッチしてください</p>
+		</div>
+
+		<!--3D空間-->
+		
+		<!--
+		permission_uiを優先するために初期状態では表示しない
+		device-orientation-permission-uiをfalseにすることでa-frameにデフォルトで搭載されているDeviceMotion取得用UIを無視
+		embedded arjsでarモードを有効化
+		vr-mode-uiをfalseにすることで右下の謎のボタンを削除(Androidだとできてない？)
+		id="main"は今のところ意味なし
+		-->
+		<a-scene id="main" device-orientation-permission-ui="enabled: false" embedded arjs vr-mode-ui="enabled: false;" style="display: none">
+			<a-entity id='camera' camera look-controls="touchEnabled: false;" position="0 0 0">
+				
+				<!--移動オブジェクトの移動先の取得-->
+				<a-entity cursor="rayOrigin: mouse" raycaster="objects: #target;"></a-entity> 
+
+				<!--rayの衝突用-->
+				<a-plane cursor-listener id="target" position="0 0 -2" scale="25 15 1" opacity="0"></a-plane> 
+			</a-entity>
+		</a-scene>
+
+		<!--仮UI-->
+
+
+		<!--JS用-->
+
+		<script src="./data/tutorial.js"></script>
+	</body>
+</html>
